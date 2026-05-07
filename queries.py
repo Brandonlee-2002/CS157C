@@ -51,12 +51,20 @@ def login_user(username, password):
     if not result:
         return None, "User not found."
     user = result[0]
-    # Dataset users have no password property — block login attempts on them
     if not user.get("password"):
-        return None, "This account was not registered through the app."
-    # Hash the input password and compare against the stored hash
-    if user["password"] != hash_password(password):
-        return None, "Incorrect password."
+        return None, "No password set for this account."
+    stored = user["password"]
+    # Registered users have a SHA-256 hash (64 hex chars)
+    # Dataset users have a plain text password
+    # Check both cases so both can log in
+    if len(stored) == 64:
+        # Registered user — compare hashed input to stored hash
+        if stored != hash_password(password):
+            return None, "Incorrect password."
+    else:
+        # Dataset user — compare plain text directly
+        if stored != password:
+            return None, "Incorrect password."
     return user, "Login successful."
 
 # UC-3: View Profile 

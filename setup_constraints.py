@@ -12,6 +12,10 @@ try:
         FOR (u:user) REQUIRE u.username IS UNIQUE
     """)
     run_query("""
+        CREATE CONSTRAINT email IF NOT EXISTS
+        FOR (u:user) REQUIRE u.email IS UNIQUE
+    """)
+    run_query("""
         CREATE INDEX user_name IF NOT EXISTS
         FOR (u:user) ON (u.name)
     """)
